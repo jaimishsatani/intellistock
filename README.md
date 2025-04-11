@@ -21,14 +21,6 @@
 ✅ Generate PDF inventory reports  
 ✅ Insightful Dashboard with charts
 
----
-
-## 📸 Screenshots
-
-- **Dashboard View**
-- **Agent Interactions**
-- **PDF Export Example**
-- *(Add your screenshots here)*
 
 ---
 
