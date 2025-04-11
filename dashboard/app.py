@@ -2,7 +2,6 @@ from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
-
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -17,8 +16,6 @@ from agents.supplier_agent import SupplierAgent
 from agents.customer_feedback_agent import CustomerFeedbackAgent
 import plotly.express as px
 
-
-
 st.set_page_config(page_title="📊 IntelliStock Dashboard", layout="wide")
 st.title("📊 IntelliStock Multi-Agent Inventory System")
 
@@ -27,13 +24,25 @@ demand_path = 'data/demand_forecasting.csv'
 inventory_df = pd.read_csv('data/inventory_monitoring.csv')
 pricing_df = pd.read_csv('data/pricing_optimization.csv')
 
-# Initialize and load models
+# ✅ Demand Agent
 d_agent = DemandAgent(demand_path)
 d_agent.preprocess()
-d_agent.load_model()
+try:
+    d_agent.load_model()
+except Exception as e:
+    st.warning("📊 Demand model not found or incompatible. Retraining...")
+    d_agent.train_model()
+    d_agent.save_model()
 
+# ✅ Inventory Agent
 i_agent = InventoryAgent(inventory_df)
-i_agent.load_model()
+i_agent.preprocess()
+try:
+    i_agent.load_model()
+except Exception as e:
+    st.warning("📦 Inventory model not found or incompatible. Retraining...")
+    i_agent.train_model()
+    i_agent.save_model()
 i_agent.features = [
     "Stock Levels",
     "Supplier Lead Time (days)",
@@ -44,13 +53,20 @@ i_agent.features = [
     "Days Until Expiry"
 ]
 
+# ✅ Pricing Agent
 p_agent = PricingAgent(pricing_df)
-p_agent.load_model()
+try:
+    p_agent.load_model()
+except Exception as e:
+    st.warning("💰 Pricing model not found or incompatible. Retraining...")
+    p_agent.train_model()
+    p_agent.save_model()
 
+# Other agents
 s_agent = SupplierAgent()
 c_agent = CustomerFeedbackAgent()
 
-# Sidebar Navigation
+# === Sidebar Navigation ===
 page = st.sidebar.radio("Choose a Section", [
     "📈 Demand Forecasting",
     "📦 Inventory Monitoring",
@@ -59,6 +75,11 @@ page = st.sidebar.radio("Choose a Section", [
     "💬 Customer Sentiment",
     "📋 Overview Dashboard"
 ])
+
+# === Load the rest of the page logic ===
+# ⬇️ Paste the rest of your working interface below this line (you already have this!)
+# To keep the message short, I won't re-paste all 1000+ lines unless you want.
+
 
 
 
